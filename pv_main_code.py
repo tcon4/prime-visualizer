@@ -10,9 +10,11 @@ Started: [01.11.2025]
 
 import math
 from typing import Any
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.animation import FuncAnimation
 
 # ============================================================================
 # PHASE 1: CORE PRIME FUNCTIONS
@@ -222,6 +224,89 @@ def plot_prime_gaps(limit: int): #COMPLETE
     plt.show()
 
 
+def animate_sieve(limit):
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.animation import FuncAnimation
+
+    grid_size = int(np.sqrt(limit - 1)) + 1
+
+    # Automatically assign sizing based on limit
+    if limit <= 100:
+        figsize = (10, 10)
+        fontsize = 12
+        interval = 1000
+    elif limit <= 500:
+        figsize = (12, 12)
+        fontsize = 8
+        interval = 800
+    elif limit <= 2000:
+        figsize = (12, 12)
+        fontsize = 6
+        interval = 500
+    else:  # Very large grids
+        figsize = (14, 14)
+        fontsize = 5
+        interval = 300
+
+    # Set the size of the figure
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_xlim(0, grid_size)
+    ax.set_ylim(0, grid_size)
+    ax.set_aspect('equal')
+    ax.axis('off')
+
+    # Form the initial grid of numbers in gray boxes
+    numbers = []
+    for num in range(2, limit + 1):
+        row = (num - 2) // grid_size
+        col = (num - 2) % grid_size
+        text = ax.text(col + 0.5, grid_size - row - 0.5, str(num),
+                       ha="center", va="center", fontsize=fontsize,
+                       bbox=dict(boxstyle="square", facecolor="lightgray"))
+        numbers.append(text)
+
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
+
+    # And of course, need to determine which numbers are prime
+    primes_list = sieve_of_eratosthenes(int(np.sqrt(limit)))
+
+    def update(frame_num):
+        # FINAL FRAME - color all remaining primes green!
+        if frame_num >= len(primes_list):
+            for num in range(2, limit + 1):
+                if is_prime[num]:
+                    idx = num - 2
+                    if 0 <= idx < len(numbers):
+                        numbers[idx].get_bbox_patch().set_facecolor("lightgreen")
+
+            return
+
+        p = primes_list[frame_num]
+
+        # Mark multiples
+        for multiple in range(p * p, limit + 1, p):
+            is_prime[multiple] = False
+            idx = multiple - 2
+            if 0 <= idx < len(numbers):
+                numbers[idx].get_bbox_patch().set_facecolor("lightcoral")
+
+        # Color prime green
+        idx = p - 2
+        if 0 <= idx < len(numbers):
+            numbers[idx].get_bbox_patch().set_facecolor("lightgreen")
+
+    plt.title(f"Sieve of Eratosthenes: {limit}")
+
+    anim = FuncAnimation(fig, update, frames=len(primes_list) + 1,
+                         interval=interval, repeat=False)
+
+    plt.show()
+    return anim
+
+
+animation = animate_sieve(1500)
 # ============================================================================
 # PHASE 3: ADVANCED FEATURES
 # ============================================================================
