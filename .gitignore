@@ -1,0 +1,15 @@
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Test files
+*_test.py
+test_*.py
+
+# Output files (optional - remove this line if you want to keep example images)
+*.png
+*.gif
