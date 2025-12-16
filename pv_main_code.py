@@ -14,30 +14,28 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.animation import FuncAnimation
-
 # ============================================================================
 # PHASE 1: CORE PRIME FUNCTIONS
 # ============================================================================
 
-def is_prime(n: int) -> bool: #COMPLETE
+def is_prime(number: int) -> bool:
     """
     Check if a number is prime using trial division.
     Args:
-        n: Integer to check
+        number: Integer to check
     Returns:
         Boolean: True if prime, False otherwise
     """
 
     # Loop to check divisibility of n by each number up to it's square root, adds count of factors
-    for num in range(2, (int(n ** 0.5) + 1)):
-        if n % num == 0:
+    for num in range(2, (int(number ** 0.5) + 1)):
+        if number % num == 0:
             return False
 
     return True
 
 
-def sieve_of_eratosthenes(limit: int) -> list[Any]: #COMPLETE
+def sieve_of_eratosthenes(limit: int) -> list[int]:
     """
     Generate all prime numbers up to limit using the Sieve of Eratosthenes.
     Args:
@@ -60,41 +58,41 @@ def sieve_of_eratosthenes(limit: int) -> list[Any]: #COMPLETE
         p += 1
 
     # Collect all prime numbers
-    prime_nums = []
+    prime_numbers = []
     for p in range(2, limit + 1):
         if prime[p]:
-            prime_nums.append(p)
+            prime_numbers.append(p)
     
-    return prime_nums
+    return prime_numbers
 
 
-def prime_factorization(n): #COMPLETE
+def prime_factorization(number: int) -> list[int]:
     """
-    Find the prime factorization of n.
+    Find the prime factorization of a number.
     Args:
-        n: Integer to factorize
+        number: Integer to factorize
     Returns:
-        List with all prime factors of n
+        List with all prime factors of the number
     """
     
     factors = []
     
     # Check for factor of 2
-    while n % 2 == 0:
+    while number % 2 == 0:
         factors.append(2)
-        n = n // 2
+        number = number // 2
     
     # Check odd factors from 3 onwards
     i = 3
-    while i * i <= n:
-        while n % i == 0:
+    while i * i <= number:
+        while number % i == 0:
             factors.append(i)
-            n = n // i
+            number = number // i
         i += 2
     
-    # If n is still greater than 1, it's a prime factor
-    if n > 1:
-        factors.append(n)
+    # If the number is still greater than 1, it's a prime factor
+    if number > 1:
+        factors.append(number)
     
     return factors
 
@@ -103,12 +101,18 @@ def prime_factorization(n): #COMPLETE
 # PHASE 2: VISUALIZATION FUNCTIONS
 # ============================================================================
 
-def plot_prime_distribution(limit: int): #COMPLETE
+def plot_prime_distribution(limit: int):
     """
     Visualize the distribution of primes up to limit.
     
     Shows both the actual count and the Prime Number Theorem approximation:
     π(x) ≈ x / ln(x)
+
+    Args:
+        List of primes via Sieve of Eratosthenes
+        Count of primes less than or equal to provided limit
+    Returns:
+        Line graph including PNT predicted number of primes vs actual count
     """
 
     # Call Sieve from above and establish plot lists
@@ -149,7 +153,7 @@ def plot_prime_distribution(limit: int): #COMPLETE
     plt.show()
 
 
-def ulam_spiral(size: int): #COMPLETE
+def ulam_spiral(size: int):
     """
     Create an Ulam Spiral visualization.
     
@@ -157,7 +161,9 @@ def ulam_spiral(size: int): #COMPLETE
     Numbers are arranged in a spiral, with primes highlighted.
     
     Args:
-        size: Size of the spiral (size x size grid)
+        Size of the spiral (size x size grid)
+    Returns:
+        Grid of prime numbers spiraling out from center
     """
     # Define grid and it's size
     grid = np.zeros((size, size))
@@ -195,12 +201,13 @@ def ulam_spiral(size: int): #COMPLETE
     plt.show()
 
 
-def plot_prime_gaps(limit: int): #COMPLETE
+def plot_prime_gaps(limit: int):
     """
-    Visualize gaps between consecutive primes.
-    
+    Visualize gaps between consecutive primes. Goes with Twins and Constellations below!
     Args:
         limit: Upper bound for prime generation
+    Returns:
+        Line graph showing gaps between consecutive primes
     """
     # Two lists to be used
     primes = sieve_of_eratosthenes(limit)
@@ -225,6 +232,14 @@ def plot_prime_gaps(limit: int): #COMPLETE
 
 
 def animate_sieve(limit):
+    """
+    Animated Sieve of Eratosthenes to illustrate how the primes are calculated
+    Args:
+        limit: The upper bound of primes to be calculated
+    Returns:
+        Short animation of a grid with size based on the input limit
+        Turns multiples red (not prime) and unique primes green
+    """
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.animation import FuncAnimation
@@ -306,7 +321,6 @@ def animate_sieve(limit):
     return anim
 
 
-animation = animate_sieve(1500)
 # ============================================================================
 # PHASE 3: ADVANCED FEATURES
 # ============================================================================
@@ -318,14 +332,13 @@ def find_twin_primes(limit: int) -> list:
     Examples: (3,5), (5,7), (11,13), (17,19)...
     
     Args:
-        limit: Upper bound
+        limit: The upper bound for prime generation
     
     Returns:
         List of tuples containing twin prime pairs
     """
-    # Initialize a list for the twins
+    # Initialize a list for the twins, and the Sieve to get primes
     list_twin_primes = []
-    # And another for the Sieve
     sieve = sieve_of_eratosthenes(limit)
 
     # Loop through the sieve list, checking for neighboring primes (prime + 2 = another prime)
@@ -336,7 +349,7 @@ def find_twin_primes(limit: int) -> list:
     return list_twin_primes
 
 
-def goldbach_conjecture_test(even_number: int):
+def goldbach_conjecture_test(even_number: int) -> list:
     """
     Test Goldbach's conjecture for even number n.
     Conjecture: Every even integer > 2 can be expressed as sum of two primes.
@@ -386,16 +399,12 @@ def find_mersenne_primes(limit: int) -> list:
     return mersenne_primes
 
 
-def find_prime_constellations(limit):
+def find_prime_constellations(limit) -> list:
     """
     Find prime constellations, categorized by exclusivity.
 
     Args:
-        limit: Upper bound
-        pattern: Type of constellation
-            - "triplet": (p, p+2, p+6) or (p, p+4, p+6)
-            - "quadruplet": (p, p+2, p+6, p+8)
-            - "quintuplet": (p, p+2, p+6, p+8, p+12)
+        limit: the upper bound of constellations calculated
 
     Returns:
         List of tuples containing constellation patterns
@@ -438,7 +447,6 @@ def benchmark_algorithms(limit):
     Use time.time() to measure execution time of:
     - Trial division for each number
     - Sieve of Eratosthenes
-    - NumPy optimized version (if you implement one)
     """
     import time
 
@@ -498,6 +506,7 @@ def main():
     #plot_prime_distribution(1000)
     #plot_prime_gaps(1000)
     #ulam_spiral(201)
+    #animation = animate_sieve(2000)
     
     # Test Phase 3
     #print("\n--- Testing Twin Primes ---")
@@ -511,43 +520,29 @@ def main():
         #pairs = goldbach_conjecture_test(even_number)
         #print(f"{even_number} = {pairs[0][0]} + {pairs[0][1]}")
 
-    print("\n--- Testing Mersenne Primes ---")
-    mersenne_primes = find_mersenne_primes(20)
-    print(f"Mersenne primes up to 20: {mersenne_primes}")
+    #print("\n--- Testing Mersenne Primes ---")
+    #mersenne_primes = find_mersenne_primes(20)
+    #print(f"Mersenne primes up to 20: {mersenne_primes}")
 
     #print("\n--- Benchmark Trial Division vs. Sieve of Eratosthenes ---")
     #print(benchmark_algorithms(1000000))
 
 
-    result = find_prime_constellations(1500)
-    print("\n" + "=" * 60)
-    print("PRIME CONSTELLATIONS UP TO 1500")
-    print("=" * 60)
-    print(f"\n🌟 Quintuplets ({len(result['quintuplets'])} found - rarest!):")
-    for q in result['quintuplets']:
-        print(f"   {q}")
-    print(f"\n⭐ Quadruplets ({len(result['quadruplets'])} found - not in quintuplets):")
-    for q in result['quadruplets']:
-        print(f"   {q}")
-    print(f"\n✨ Triplets ({len(result['triplets'])} found - standalone only):")
-    for t in result['triplets']:
-        print(f"   {t}")
-    print("=" * 60)
+    #result = find_prime_constellations(1500)
+    #print("\n" + "=" * 60)
+    #print("PRIME CONSTELLATIONS UP TO 1500")
+    #print("=" * 60)
+    #print(f"\n🌟 Quintuplets ({len(result['quintuplets'])} found - rarest!):")
+    #for q in result['quintuplets']:
+        #print(f"   {q}")
+    #print(f"\n⭐ Quadruplets ({len(result['quadruplets'])} found - not in quintuplets):")
+    #for q in result['quadruplets']:
+        #print(f"   {q}")
+    #print(f"\n✨ Triplets ({len(result['triplets'])} found - standalone only):")
+    #for t in result['triplets']:
+        #print(f"   {t}")
+    #print("=" * 60)
 
 
 if __name__ == "__main__":
     main()
-
-
-# ============================================================================
-# EXTENSION IDEAS (After completing the above)
-# ============================================================================
-
-"""
-1. Prime number race: Compare primes ≡ 1 (mod 4) vs ≡ 3 (mod 4)
-2. Prime spirals with different patterns
-3. Animated visualization of the Sieve of Eratosthenes
-4. Web interface using Streamlit or Flask
-5. Compare your implementations with sympy.isprime() for validation
-6. Hardy-Littlewood constants visualization
-"""
