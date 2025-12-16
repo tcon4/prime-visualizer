@@ -399,35 +399,44 @@ def find_mersenne_primes(limit: int) -> list:
     return mersenne_primes
 
 
-def find_prime_constellations(limit) -> list:
+def find_prime_constellations(limit):
     """
     Find prime constellations, categorized by exclusivity.
-
-    Args:
-        limit: the upper bound of constellations calculated
-
-    Returns:
-        List of tuples containing constellation patterns
+    Returns only constellations that are NOT subsets of larger ones.
     """
-
     sieve = sieve_of_eratosthenes(limit)
 
-    triplets = []
-    quadruplets = []
     quintuplets = []
+    quadruplets = []
+    triplets = []
 
+    # First pass: Find ALL constellations
     for prime in sieve:
-
+        # Check quintuplet
         if (prime + 2) in sieve and (prime + 6) in sieve and (prime + 8) in sieve and (prime + 12) in sieve:
             quintuplets.append((prime, prime + 2, prime + 6, prime + 8, prime + 12))
 
-        elif (prime + 2) in sieve and (prime + 6 in sieve) and (prime + 8) in sieve:
-            quadruplets.append((prime, prime + 2, prime + 6, prime + 8))
+        # Check quadruplet
+        if (prime + 2) in sieve and (prime + 6) in sieve and (prime + 8) in sieve:
+            quad = (prime, prime + 2, prime + 6, prime + 8)
+            # Only add if NOT a subset of any quintuplet
+            if not any(all(p in quint for p in quad) for quint in quintuplets):
+                quadruplets.append(quad)
 
-        elif (prime + 2) in sieve and (prime + 6) in sieve:
-            triplets.append((prime, prime + 2, prime + 6))
+        # Check triplet pattern A: (p, p+2, p+6)
+        if (prime + 2) in sieve and (prime + 6) in sieve:
+            trip = (prime, prime + 2, prime + 6)
+            # Only add if NOT a subset of any quad or quint
+            if not any(all(p in quint for p in trip) for quint in quintuplets):
+                if not any(all(p in quad for p in trip) for quad in quadruplets):
+                    triplets.append(trip)
+
+        # Check triplet pattern B: (p, p+4, p+6)
         elif (prime + 4) in sieve and (prime + 6) in sieve:
-            triplets.append((prime, prime + 4, prime + 6))
+            trip = (prime, prime + 4, prime + 6)
+            if not any(all(p in quint for p in trip) for quint in quintuplets):
+                if not any(all(p in quad for p in trip) for quad in quadruplets):
+                    triplets.append(trip)
 
     return {
         'triplets': triplets,
@@ -503,8 +512,8 @@ def main():
     
     # Test Phase 2
     #print("\n--- Generating visualizations ---")
-    #plot_prime_distribution(1000)
-    #plot_prime_gaps(1000)
+    #plot_prime_distribution(100)
+    #plot_prime_gaps(100)
     #ulam_spiral(201)
     #animation = animate_sieve(2000)
     
