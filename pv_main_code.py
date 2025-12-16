@@ -480,7 +480,7 @@ def benchmark_algorithms(limit):
 def main():
     """
     Main function to test your implementations.
-    Uncomment sections as you complete them!
+    Uncomment sections to test.
     """
     
     #print("Prime Number Visualizer & Analyzer")
